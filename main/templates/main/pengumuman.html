@@ -1,0 +1,133 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between">
+        <h4 class="fw-bold py-3 px-4"><span class="text-muted fw-light"></span>Pengumuman</h4>
+        <div>
+        {% if request.user.pengguna.tipe == 'Admin' %}
+        <button type="button" class="btn btn-icon btn-primary mt-2 mx-4" data-bs-toggle="modal" data-bs-target="#tambahPengumuman">
+            <span class="tf-icons bx bxs-plus-square"></span>
+        </button>
+        {% endif %}
+        </div>
+    </div>
+    {% include 'main/messages.html'%}
+    {% if ada_data %}
+    {% for pengumuman in semua_pengumuman %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h3>{{ pengumuman.judul }}</h3>
+            {% if request.user.pengguna.tipe == 'Admin' %}
+            <div class="btn-group">
+                <button
+                  type="button"
+                  class="btn btn-icon rounded-pill dropdown-toggle hide-arrow"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item" style="cursor:pointer" onclick="ubah(url='{% url 'Get Pengumuman' id=pengumuman.id %}')"><i class="tf-icons bx bx-edit me-3"></i>Ubah</a></li>
+                  <li><a class="dropdown-item" style="cursor:pointer" onclick="confirm('Yakin ingin menghapus pengumuman ini?') ? location.href='{% url 'Hapus Pengumuman' id=pengumuman.id %}' : ''"><i class="tf-icons bx bx-trash me-3"></i>Hapus</a></li>
+                </ul>
+            </div>
+            {% endif %}    
+        </div>
+        <div class="mt-3">
+          <i class="menu-icon tf-icons bx bx-calendar-event me-2"></i>{{ pengumuman.tanggal|date:"F d, Y" }}
+          <br>
+          <i class='menu-icon tf-icons bx bx-time-five me-2'></i>{{ pengumuman.tanggal|date:"h:i A" }}  
+        </div>
+
+        <hr>
+        <p>{{ pengumuman.deskripsi }}</p>
+        <small>Tertanda : <b>{{ pengumuman.dibuat_oleh.nama }}</b> </small>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <h4 align="center" class="text-danger">Belum ada pengumuman!</h4>
+    {% endif %}
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tambahPengumuman" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahPengumumanLabel">Tambah Pengumuman</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="id_pengumuman" id="id_pengumuman"/>
+            <label class="col-sm-3 col-form-label" for="id_judul">Judul</label>
+            <div class="col-sm-9">
+              {{ form.judul }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_deskripsi">Deskripsi</label>
+            <div class="col-sm-9">
+              {{ form.deskripsi }}
+            </div>
+          </div>
+        </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tambah" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  let id_pengumuman = document.getElementById('id_pengumuman');
+  let judul = document.getElementById('id_judul');
+  let deskripsi = document.getElementById('id_deskripsi');
+  let modal_label = document.getElementById('tambahPengumumanLabel');
+  let btn_submit = document.getElementById('btn_submit');
+
+  function ubah(url) {
+      $.ajax({
+          url: url,
+          success: function(data) {
+              id_pengumuman.value = JSON.parse(data)[0].pk
+              data = JSON.parse(data)[0].fields
+              judul.value = data.judul
+              deskripsi.value = data.deskripsi
+              modal_label.innerText = 'Ubah Pengumuman'
+              btn_submit.innerText = "Simpan"
+              btn_submit.value = "Ubah"
+              $("#tambahPengumuman").modal("show");
+          }
+      });
+  }
+
+  $('#tambahPengumuman').on('hidden.bs.modal', function () {
+      $(this).find('form').trigger('reset');
+      id_pengumuman.value = ""
+      judul.value = ""
+      deskripsi.value = ""
+      modal_label.innerText = 'Tambah Pengumuman'
+      btn_submit.innerText = "Simpan"
+      btn_submit.value = "Tambah"
+  })
+</script>
+{% endblock %}

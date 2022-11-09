@@ -1,0 +1,43 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  {% include 'main/messages.html'%}
+  <div class="card">
+    <h3 class="card-header">Notifikasi Anda</h3>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Dari</th>
+            <th>Pesan</th>
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% for notifikasi in semua_notifikasi %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ notifikasi.tanggal|date:"d-m-Y H:i" }}</td>
+            <td>{{ notifikasi.dari.nama }}</td>
+            <td class="text-wrap" style="min-width:300px">{{ notifikasi.pesan }}</td>
+          </tr>
+          {% endfor %}
+          <tfoot class="table-border-bottom-0">
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modal %}
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

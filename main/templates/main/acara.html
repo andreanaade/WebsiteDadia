@@ -1,0 +1,100 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class="d-flex justify-content-between">
+    <h4 class="fw-bold py-3 px-4"><span class="text-muted fw-light"></span> Kegiatan / Acara</h4>
+    {% if request.user.pengguna.tipe == 'Admin' %}
+    <div>
+      <button type="button" class="btn btn-icon btn-primary mt-2 mx-4" data-bs-toggle="modal" data-bs-target="#tambahAcara">
+        <span class="tf-icons bx bxs-plus-square"></span>
+      </button>
+    </div>
+    {% endif %}
+  </div>
+  {% include 'main/messages.html'%}
+  <div class="row">
+    {% if ada_data %}
+    {% for a in acara %}
+    <div class="col-md-6 col-lg-6 mb-3">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ a.judul }}</h5>
+          <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ a.deskripsi }}</p>
+          <a href="/acara/{{ a.id }}" class="btn btn-primary">Detail</a>
+        </div>
+        <div class="card-footer text-muted">{{ a.tanggal_mulai }} / {{ a.tanggal_selesai }}</div>
+      </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <h4 align="center" class="text-danger">Belum ada acara!</h4>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tambahAcara" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahAcaraLabel">Tambah Acara</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_judul">Judul Kegiatan</label>
+            <div class="col-sm-9">
+              {{ form.judul }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_deskripsi">Deskripsi Kegiatan</label>
+            <div class="col-sm-9">              
+              {{ form.deskripsi }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_tanggal_mulai">Tanggal Mulai</label>
+            <div class="col-sm-9">
+              {{ form.tanggal_mulai }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_tanggal_selesai">Tanggal Selesai</label>
+            <div class="col-sm-9">
+              {{ form.tanggal_selesai }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_deskripsi">Estimasi Biaya</label>
+            <div class="col-sm-9">
+              {{ form.jumlah_peturunan }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_tanggal_selesai">Batas Pembayaran</label>
+            <div class="col-sm-9">
+              {{ form.batas_pembayaran }}
+            </div>
+          </div>
+        </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" class="btn btn-primary" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,215 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block extracss %}
+<link rel="stylesheet" href="{% static '/dselect-main/dist/css/dselect.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class='mb-4 w-100 d-flex justify-content-between'>
+    <div>
+        <button type="button" class="btn btn-icon btn-primary mt-2" onclick="location.href='/acara/{{id_acara}}'">
+            <i class="tf-icons bx bx-arrow-back"></i>
+        </button>
+    </div>
+    <div> 
+        {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+        <button type="button" class="btn btn-icon btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#tambahPeturunan">
+            <span class="tf-icons bx bxs-plus-square"></span>
+        </button>
+        {% endif %}
+        <button type="button" class="btn btn-icon btn-secondary mt-2"  onclick="frames['print_iframe'].print()">
+          <i class='bx bx-printer'></i>
+        </button>
+        <a href="whatsapp://send?text=Berikut link data pembayaran peturunan acara/kegiatan {{acara.judul}}:%0a%0a{{ request.build_absolute_uri }}%0a%0a_Pesan ini dibuat secara otomatis_" data-action="share/whatsapp/share"
+            target="_blank"><button type="button" class="btn btn-icon btn-success mt-2"><i class='bx bxl-whatsapp' ></i></button></a>
+    </div>
+  </div>
+  {% include 'main/messages.html'%}
+  <iframe name="print_iframe" height=75% width="50%" src="{% url 'Print Peturunan' id=acara.id %}" style="display:none;">
+  </iframe>
+  <div class="card">
+    <h3 class="card-header">Pembayaran Peturunan Acara {{ acara.judul }}</h3>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal Bayar</th>
+            <th>Nama Anggota</th>
+            <th>Validator</th>
+            <th>Tanggal Approve</th>
+            <th>Jumlah</th>
+            {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+            <th>Aksi</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% if ada_data %}
+            {% for detail in detail_peturunan %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ detail.tanggal_bayar|date:"d-m-Y H:i" }}</td>
+              <td>{{ detail.pengguna.nama }}</td>
+              <td>{{ detail.diapprove_oleh.nama }}</td>
+              <td>{{ detail.tanggal_approve|date:"d-m-Y H:i" }}</td>
+              <td align="right">Rp. {{ detail.bayar|intcomma }}</td>
+              {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+              <td>
+                {% if dana.deskripsi != 'Peturunan (Estimasi Biaya)' %}
+                  <button class="btn btn-icon btn-primary mx-1" onclick="ubah(url='{% url 'Get Detail Peturunan' id=detail.id %}')" ><i class="bx bx-edit-alt"></i></button><button type="button" class="btn btn-icon btn-danger mx-1" onclick="confirm('Yakin ingin menghapus data ini?') ? location.href='{% url 'Hapus Detail Peturunan' id=detail.id %}' : ''"><i class="tf-icons bx bx-trash"></i></button>
+                {% endif %}
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          {% else %}
+            <td colspan="7"><p class="text-danger mb-0" align="center">Tidak Ada Data!</p></td>
+          {% endif %}
+          <tfoot class="table-border-bottom-0">
+            <tr>
+                <td colspan="5" align="center" class="fw-bolder">Total Peturunan Masuk</td>
+                <td align='right'>Rp. {{jumlah_masuk|intcomma}}</td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="5" align="center" class="fw-bolder">Jumlah Peturunan (Estimasi Biaya)</td>
+                <td align='right'>Rp. {{peturunan.jumlah_peturunan|intcomma}}</td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+              <td colspan="5" align="center" class="fw-bolder">Total Biaya Semeton Pedesaan</td>
+              <td align='right'>Rp. {{total_tambahan_bayar|intcomma}}</td>
+              {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+              <td></td>
+              {% endif %}
+            </tr>
+            <tr>
+              <td colspan="5" align="center" class="fw-bolder">Sisa Yang Belum Dibayar</td>
+              <td align='right'>Rp. {{sisa|intcomma}}</td>
+              {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+              <td></td>
+              {% endif %}
+          </tr>
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tambahPeturunan" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahPeturunanLabel">Bayar Peturunan</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="id_detail_peturunan" id="id_detail_peturunan"/>
+            <label class="col-sm-3 col-form-label" for="id_tipe_dana">ID Anggota</label>
+            <div class="col-sm-9">
+              {{ form.pengguna }}
+              <input class="form-control" type="text" id="readonly_pengguna" style="display:none" readonly/>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_jumlah">Jumlah Bayar</label>
+            <div class="col-sm-9">
+              {{ form.bayar }}
+            </div>
+          </div>
+        </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tambah" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script src="{% static '/dselect-main/dist/js/dselect.js' %}"></script>
+<script>
+  var select_box_element = document.querySelector('#id_pengguna');
+
+    dselect(select_box_element, {
+        search: true,
+        clearable: true
+    });
+  
+  let id_detail_peturunan = document.getElementById('id_detail_peturunan');
+  let pengguna = document.getElementById('id_pengguna');
+  let bayar = document.getElementById('id_bayar');
+  let modal_label = document.getElementById('tambahPeturunanLabel');
+  let btn_submit = document.getElementById('btn_submit');
+  let reset = document.getElementById('clearbtn')
+  let select_bangke = document.getElementById('select-bangke')
+  let readonly_pengguna = document.getElementById('readonly_pengguna')
+  function ubah(url) {
+      $.ajax({
+          url: url,
+          success: function(data) {
+              id_detail_peturunan.value = JSON.parse(data)[0].pk
+              data_pengguna = JSON.parse(data)[1].fields
+              pengguna.required = false
+              pengguna.value = data_pengguna.id
+              data = JSON.parse(data)[0].fields
+              select_bangke.style = 'display:none'
+              readonly_pengguna.style = 'display:block'
+              readonly_pengguna.value = data_pengguna.nama
+              bayar.value = data.bayar
+              modal_label.innerText = 'Ubah Peturunan'
+              btn_submit.innerText = "Simpan"
+              btn_submit.value = "Ubah"
+              $("#tambahPeturunan").modal("show");
+          }
+      });
+  }
+  $('#id_pengguna').on('change', function () {
+    $.ajax({
+      url: `/get-jumlah/${$(this)[0].value}/{{peturunan.id}}`,
+      success: function(data) {
+          bayar.value = data.bayar
+      }
+  });
+  })
+
+
+  $('#tambahPeturunan').on('hidden.bs.modal', function () {
+      $(this).find('form').trigger('reset');
+      id_detail_peturunan.value = ""
+      select_bangke.style = 'display:block'
+      readonly_pengguna.style = 'display:none'
+      dselectClear(reset, 'dselect-wrapper')
+      pengguna.required = true
+      modal_label.innerText = 'Bayar Peturunan'
+      btn_submit.innerText = "Simpan"
+      btn_submit.value = "Simpan"
+  })
+
+  
+
+  
+</script>
+{% endblock %}

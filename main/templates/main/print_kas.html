@@ -1,0 +1,78 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print</title>
+    <style>
+        @page { size: auto;  margin: 0mm; }
+        table {
+            max-width: 2480px;
+            width: 100%;
+        }
+        table td {
+            width: auto;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <table width="100%" style="margin-bottom:10px; margin-top:20px">
+        <tr align="center">
+            <td><img src="{% static '/logo_dadia.jpg' %}"/ width="75px" height="auto" style="position:absolute; left:100px; top:25px"><h1>Dadia Pasek Gelgel Tabola<h1></td>
+        </tr>
+    </table>
+    <hr width="80%" align="center">
+    <h2 align="center">Laporan Kas Dadia</h2>
+    <div style="width:80%; margin:auto">
+        <table style="margin-bottom:20px">
+            <tr>
+                <td style="width: 100px">Tanggal Print</td>
+                <td>:</td>
+                <td>{% now "d-m-Y H:i" %}</td>
+            </tr>
+            <tr>
+                <td>Diprint oleh</td>
+                <td>:</td>
+                <td>{{ request.user.pengguna.nama }}</td>
+            </tr>
+        </table>
+        <table border="1">
+            <tr>
+                <th>No</th>
+                <th style="width:90px; word-wrap:break-word">Tanggal</th>
+                <th style="width:250px; word-wrap:break-word">Keterangan</th>
+                <th>Pemasukan</th>
+                <th>Pengeluaran</th>
+              </tr>
+              {% for kas in semua_kas %}
+              <tr>
+                <td align="center">{{ forloop.counter }}</td>
+                <td align="center">{{ kas.tanggal|date:"d-m-Y" }}</td>
+                <td style="padding-left:5px">{{ kas.deskripsi }}</td>
+                {% if kas.tipe == 'Pemasukan' %}
+                    <td align='right' style="padding-right:5px">Rp. {{kas.jumlah|intcomma}}</td>
+                    <td align='right' style="padding-right:5px"></td>
+                {% else %}
+                    <td align='right' style="padding-right:5px"></td>
+                    <td align='right' style="padding-right:5px">Rp. {{kas.jumlah|intcomma}}</td>
+                {% endif %}
+              </tr>
+              {% endfor %}
+              <tr>
+                <td colspan="3" align="center">Jumlah</td>
+                <td align='right' style="padding-right:5px">Rp. {{jumlah_pemasukan|intcomma}}</td>
+                <td align='right' style="padding-right:5px">Rp. {{jumlah_pengeluaran|intcomma}}</td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center">Total Kas</td>
+                <td colspan="2" align='right' class="text-success" style="padding-right:5px">Rp. {{total|intcomma}}</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

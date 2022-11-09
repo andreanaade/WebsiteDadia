@@ -1,0 +1,390 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between">
+        <h4 class="fw-bold pt-3 px-4"><span class="text-muted fw-light"></span>Tutorial</h4>
+        <div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="demo-inline-spacing mt-3">
+        <div class="list-group list-group-horizontal-md text-md-center">
+            <a
+                class="list-group-item list-group-item-action active"
+                id="home-list-item"
+                data-bs-toggle="list"
+                href="#horizontal-home"
+                >Login</a
+                >
+            <a
+                class="list-group-item list-group-item-action"
+                id="profile-list-item"
+                data-bs-toggle="list"
+                href="#horizontal-profile"
+                >Menu Kegiatan dan Acara</a
+                >
+            <a
+                class="list-group-item list-group-item-action"
+                id="messages-list-item"
+                data-bs-toggle="list"
+                href="#horizontal-messages"
+                >Menu KAS</a
+                >
+            <a
+                class="list-group-item list-group-item-action"
+                id="settings-list-item"
+                data-bs-toggle="list"
+                href="#horizontal-settings"
+                > Menu Anggota</a
+                >
+            <a
+                class="list-group-item list-group-item-action"
+                id="pengumuman-list-item"
+                data-bs-toggle="list"
+                href="#horizontal-pengumuman"
+                >Menu Pengumuman</a
+                >
+            <a class="list-group-item list-group-item-action"
+                id="berita-list-item"
+                data-bs-toggle="list"
+                href="#horizontal-berita"
+                >Menu Berita</a
+                >
+        </div>
+        <div class="tab-content px-0 mt-0">
+            <div class="tab-pane fade show active" id="horizontal-home">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <h5> Registrasi dan Login</h5>
+                        </div>
+                        <div class="row justify-content-center ">
+                            <div class="col-md-4 mt-3">
+                                <img src="{% static 'assets/img/tutor/sc2.png' %}" width="100%" height="auto">  
+                            </div>
+                            <p class="mt-3">Silakan Login menggunakan Username Dan Password anda!.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="horizontal-profile">
+                <div class="card">
+                    <div class="card-body">
+                        <div>
+                            <h5> Menu Kegiatan dan Acara</h5>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 mt-3">
+                                <img src="{% static 'assets/img/tutor/sc35.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Ini adalah halaman <b>Kegiatan/Acara</b>, pada halaman ini kita bisa melihat acara dan kegiatan yang akan dilaksanakan .</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 mt-3">
+                                <img src="{% static 'assets/img/tutor/sc31.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Untuk menambahkan Kegiatan Atau Acara yaitu dengan mengklik tombol yang ditandai diatas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 mt-3">
+                                <img src="{% static 'assets/img/tutor/sc32.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Maka akan muncul tampilan seperti ini, silakan mengisikan data sesuai Form. lalu klik simpan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc34.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Untuk melihat detail dari sebuah acara, klik tombol detail, seperti pada contoh diatas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc36.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Maka akan muncul informasi tentang acara ataupun kegiatan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 mt-3">
+                                <img src="{% static 'assets/img/tutor/sc33.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Untuk mengubah detail kegiatan bisa mengklik tombol yang ditandai.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6 mt-3">
+                                <img src="{% static 'assets/img/tutor/sc37.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Maka akan muncul tampilan seperti diatas, silakan mengisi form untuk mengubah detail acara atau kegiatan. Lalu klik Simpan .</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc38.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Untuk melihat lebih detail dari Acara atau Kegiatan, silakan klik yang ditandai diatas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc39.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Ada beberapa menu seperti Dana Acara, Biaya Semeton Pedesaan, Detail Peturunan, Biaya via Transfer, Validasi Pembayaran Transfer, Validasi Pengajuan, Tunggakan Anggota.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc40.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3"><b>Halaman Dana Acara</b>. Pada halaman ini anda bisa melihat jumlah dana yang dikeluarkan untuk acara ini.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc41.jpg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Untuk menambahkan dana acara klik tombol yang sudah ditandai pada gambar diatas (<b class="text-danger"> Hanya Admin yang bisa menambahkan dana pada acara!.</b>).</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc42.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Maka akan muncul tampilan seperti ini, silahkan masukkan Tipe dana, Keterangan dana, Jumlah dana, dan Struk belanja, jika sudah lalu klik Simpan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc43.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Jika ingin membuat usulan, caranya dengan mengklik tombol yang sudah ditandai diatas(<b class="text-danger">Hanya Admin dan Bendahara yang bisa membuat Pengajuan.</b>).</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc44.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Masukkan Keterangan atau alasan pengajuan, dan masukkan jumlah pengajuan. Jika sudah klik Kirim, jika sudah maka tunggu verifikasi dari admin jika diijinkan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc45.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Disebelah tombol Pengajuan, terdapat juga tombol untuk Print dana acara.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc46.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Disana anda juga bisa save ke pdf atau Print langsung.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc47.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Dan disebelah tombol Print terdapat juga tombol share Ke Whatsapp.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc48.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3"><b>Halaman Biaya Semeton Pedesaan</b>. Pada halaman ini anda bisa melihat dan memilih Anggota yang kena Biaya Pedesaan dengan cara memasukkan jumlah pada kolom diatas table, dan memilih siapa anggota yang kena dengan cara men-Cheklis nama-nama anggota di dalam table. Setelah itu klik simpan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc49.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3"><b>Halaman Detail Peturunan</b>. Pada halaman ini anda bisa melihat siapa saja yang sudah membayar Peturunan Acara, dan memasukkan nama Anggota yang sudah membayar.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc50.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Caranya dengan mengklik tombol tambah yang di tandai diatas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc51.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Setelah itu pilih nama anggota yang sudah membayar, dan jumlah nominal bayarnya. Jika sudah klik tombol Simpan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc20.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Jika anda meng-Klik menu <b>Bayar Fia Transfer</b> maka akan muncul seperti ini, disitu berisikan jumlah yang harus dibayar, dan kita juga disuruh mengirim bukti transfer</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc52.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Pada halaman <b>Validasi Pembayaran Transfer</b>, anda bisa melihat Anggota yang membayar via Transfer beserta bukti transfernya, Klik tombol <b class="text-success">Cheklist</b> jika anggota sudah mengirim bukti transfer, atau Klik Tombol <b class="text-danger">X</b> jika anggota belum mengirim bukti transfer</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc53.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Selanjutnya pada <b>halaman Validasi Pengajuan</b>, anda bisa melihat pengajuan yang diajukan oleh Bendahara, Klik tombol <b class="text-success">Cheklist</b> jika anda setuju, atau klik tombol <b class="text-danger">X</b> jika anda tidak setuju</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc54.png' %}" width="100%" height="auto">
+                            </div>
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc57.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Di halaman <b>Tunggakan Anggota</b>, Anda bisa melihat siapa saja yang masih menuggak pembayaran, dan Anda juga bisa mengubah status Anggota yang sudah membayar maupun belum.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc55.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Dengan cara mengklik tombol ubah di sebelah kanan table yang sudah ditandai.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc56.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Lalu masukkan jumlah yang ditunggak, jika sudah lalu klik tombol Simpan.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc22.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Pada halaman detail acara juga terdapat form Usulan. Untuk anda yang mempunyai usulan, bisa mengetikan usulannya di kolom usulan, setelah itu klik tombol kirim.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc23.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Jika sudah. Maka postingan usulan anda akan terlihat pada halaman detail acara.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="horizontal-messages">
+                <div class="mt-5">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Menu KAS</h5>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <img src="{% static 'assets/img/tutor/sc58.png' %}" width="100%" height="auto">
+                                </div>
+                                <p class="mt-3">Padah Menu KAS, terdapat KAS Dadia Pasek Gelgel, Anda Juga bisa menambahkan jumlah KAS nya.</p>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <img src="{% static 'assets/img/tutor/sc59.png' %}" width="100%" height="auto">
+                                </div>
+                                <p class="mt-3">Dengan cara mengklik tombol yang sudah ditandai di atas.</p>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <img src="{% static 'assets/img/tutor/sc60.png' %}" width="100%" height="auto">
+                                </div>
+                                <p class="mt-3">Maka akan menampilkan tampilan seperti ini, lalu anda masukkan Tipe KAS, Keterangan KAS, dan Jumlah KAS. Jika sudah selesai lalu klik Simpan.</p>
+                            </div>
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <img src="{% static 'assets/img/tutor/sc61.png' %}" width="100%" height="auto">
+                                </div>
+                                <p class="mt-3">Maka Jumlah Uang KAS akan bertambah. Anda juga bisa mengubah dan menghapus Jumlah Uang KAS.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="horizontal-settings">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Menu Anggota</h5>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc62.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Pada menu Anggota terdapat 2 halaman yaitu Data Anggota dan Validasi Anggota.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc63.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Pada halaman Data Anggota terdapat data semua anggota, anda juga bisa menambahkan anggota.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc64.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Dengan cara mengklik tombol yang sudah ditandi Diatas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc65.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Cara untuk mengEdit Anggota yaitu dengan mengklik Tombol yang berisikan simbol Pena, yang sudah di tandai diatas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc66.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Maka akan muncul tampilan seperti ini, Anda bisa mengubah jabatan anggota menjadi anggota biasa atau bendahara maupun Admin.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc67.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Jika ingin menghapus anggota, maka tinggal klik tombol yang berisi simbol Tong Sampah.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="horizontal-pengumuman">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Menu Pengumuman</h5>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc68.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Pada halaman pengumuman, akan menampilkan pengumuman yang upload oleh Admin, pada halaman inilah biasanya ada pengumuman untuk rapat atau sebagainya</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc69.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Cara menambahkan pengumuman yaitu klik tombol yang sudah ditandai di atas.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc70.png' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Lalu akan muncul tampilan seperti ini, anda diminta untuk memasukan judul pengumuman dan deskripsi pengumuman. Jika sudah klil tombol Simpan.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="horizontal-berita">
+                <div class="card">
+                    <div class="card-body">
+                        <h5>Menu Berita</h5>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc28.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Pada halaman Berita, terdapat berita yang diupload, di halaman ini, anda juga dapat mengupload berita yang positif .</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc29.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Untuk mengupload berita bisa diklik yang di tandai.</p>
+                        </div>
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <img src="{% static 'assets/img/tutor/sc30.jpeg' %}" width="100%" height="auto">
+                            </div>
+                            <p class="mt-3">Maka akan muncul tampilan seperti ini, silakan mengisikan judul berita yang akan diupload, deskripsi, dan photonya. Jika sudah maka klik simpan, Maka anda berhasil mengupload berita.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

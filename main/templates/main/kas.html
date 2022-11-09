@@ -1,0 +1,185 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class='mb-4 w-100 d-flex justify-content-between'>
+    <div>
+        <button type="button" class="btn btn-icon btn-primary mt-2" onclick="location.href='/acara/{{id_acara}}'">
+            <i class="tf-icons bx bx-arrow-back"></i>
+        </button>
+    </div>
+    <div> 
+        {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+        <button type="button" class="btn btn-icon btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#tambahKas">
+            <span class="tf-icons bx bxs-plus-square"></span>
+        </button>
+        {% endif %}
+        <button type="button" class="btn btn-icon btn-secondary mt-2"  onclick="frames['print_iframe'].print()">
+            <i class='bx bx-printer'></i>
+        </button>
+        <a href="whatsapp://send?text=Berikut link data kas dadia:%0a%0a{{ request.build_absolute_uri }}%0a%0a_Pesan ini dibuat secara otomatis_" data-action="share/whatsapp/share"
+            target="_blank"><button type="button" class="btn btn-icon btn-success mt-2"><i class='bx bxl-whatsapp' ></i></button></a>
+    </div>
+  </div>
+  {% include 'main/messages.html'%}
+  <iframe name="print_iframe" height=75% width="50%" src="{% url 'Print Kas' %}" style="display:none;">
+  </iframe>
+  <div class="card">
+    <h3 class="card-header">Kas Dadia Pasek Gelgel</h3>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal</th>
+            <th>Keterangan</th>
+            <th>Pemasukan</th>
+            <th>Pengeluaran</th>
+            {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+            <th>Aksi</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% if ada_data %}
+          {% for kas in semua_kas %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ kas.tanggal|date:"d-m-Y H:i" }}</td>
+            <td class="text-wrap" style="min-width:300px">{{ kas.deskripsi }}</td>
+            {% if kas.tipe == 'Pemasukan' %}
+                <td align='right'>Rp. {{kas.jumlah|intcomma}}</td>
+                <td align='right'></td>
+            {% else %}
+                <td align='right'></td>
+                <td align='right'>Rp. {{kas.jumlah|intcomma}}</td>
+            {% endif %}
+            {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+            <td>
+              {% if kas.status %}
+                <button class="btn btn-icon btn-primary mx-1" onclick="ubah(url='{% url 'Get Kas' id=kas.id %}')" ><i class="bx bx-edit-alt"></i></button><button type="button" class="btn btn-icon btn-danger mx-1" onclick="confirm('Yakin ingin menghapus data ini?') ? location.href='{% url 'Hapus Kas' id=kas.id %}' : ''"><i class="tf-icons bx bx-trash"></i></button>
+              {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+          {% else %}
+            <td colspan="7"><p class="text-danger mb-0" align="center">Tidak Ada Data!</p></td>
+          {% endif %}
+          <tfoot class="table-border-bottom-0">
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Jumlah</td>
+                <td align='right'>Rp. {{jumlah_pemasukan|intcomma}}</td>
+                <td align='right'>Rp. {{jumlah_pengeluaran|intcomma}}</td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Total Kas</td>
+                {% if jumlah_pengeluaran > 0 %}
+                <td colspan="2" align='right' class="text-success">Rp. {{total|intcomma}}</td>
+                {% else %}
+                <td colspan="2" align='right' class="text-danger">Rp. {{total|intcomma}}</td>
+                {% endif %}
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tambahKas" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahKasLabel">Tambah Kas</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="id_kas" id="id_kas"/>
+            <label class="col-sm-3 col-form-label" for="id_tipe_dana">Tipe Kas</label>
+            <div class="col-sm-9">
+              {{ form.tipe }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_deskripsi">Keterangan Kas</label>
+            <div class="col-sm-9">
+              {{ form.deskripsi }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_jumlah">Jumlah Kas</label>
+            <div class="col-sm-9">
+              {{ form.jumlah }}
+            </div>
+          </div>
+        </form>
+        <a id="href_struk" href="" target="_blank"><img id="img_struk" class="w-100"/></a>
+        <p class="text-danger" id="paragraph"></p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tambah" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  let id_kas = document.getElementById('id_kas');
+  let tipe = document.getElementById('id_tipe');
+  let deskripsi = document.getElementById('id_deskripsi');
+  let jumlah = document.getElementById('id_jumlah');
+  let modal_label = document.getElementById('tambahKasLabel');
+  let btn_submit = document.getElementById('btn_submit');
+
+  function ubah(url) {
+      $.ajax({
+          url: url,
+          success: function(data) {
+              id_kas.value = JSON.parse(data)[0].pk
+              data = JSON.parse(data)[0].fields
+              tipe.value = data.tipe
+              deskripsi.value = data.deskripsi
+              jumlah.value = data.jumlah
+              modal_label.innerText = 'Ubah Kas'
+              btn_submit.innerText = "Simpan"
+              btn_submit.value = "Ubah"
+              $("#tambahKas").modal("show");
+          }
+      });
+  }
+
+  $('#tambahKas').on('hidden.bs.modal', function () {
+      $(this).find('form').trigger('reset');
+      id_kas.value = ""
+      modal_label.innerText = 'Tambah Kas'
+      btn_submit.innerText = "Simpan"
+      btn_submit.value = "Tambah"
+  })
+
+
+</script>
+{% endblock %}

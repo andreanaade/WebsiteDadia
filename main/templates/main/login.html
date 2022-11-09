@@ -1,0 +1,32 @@
+{% extends 'main/base_auth.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}Login{% endblock %}
+
+{% block content %}
+{% comment %} <form action="#" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Login" class="btn btn-secondary">
+</form> {% endcomment %}
+<form id="formAuthentication" class="mb-3" action="#" method="POST">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="username" class="form-label">Username</label>
+      {{ form.username }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="password">Password</label>
+      {{ form.password }}
+    </div>
+
+    <button class="btn btn-primary d-grid w-100">Login</button>
+  </form>
+
+  <p class="text-center">
+    <span>Belum punya akun?</span>
+    <a href="/profile/new-auth/">
+      <span>Register</span>
+    </a>
+  </p>
+{% endblock %}

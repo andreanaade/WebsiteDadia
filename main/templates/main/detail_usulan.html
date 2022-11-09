@@ -1,0 +1,167 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load mathfilters %}
+
+
+{% block content %}
+{% include 'main/messages.html'%}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row justify-content-center">
+        <div class="col-md-12 col-lg-12 mb-3">
+          <div class="card">
+            <div class="card-body">
+              <div class="d-flex">
+                  <div class="flex-shrink-0 me-3">
+                    <div class="avatar">
+                      {% if usulan.pengusul.foto_profile %}
+                      <img src="{{usulan.pengusul.foto_profile.url}}" alt class="w-px-40 h-px-40 rounded-circle" />
+                      {% else %}
+                      <img src="{% static './assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="flex-grow-1">
+                    <span class="fw-semibold d-block">{{ usulan.pengusul }}</span>
+                    <small class="text-muted">{{ usulan.tanggal|naturaltime }}</small>
+                  </div>
+                </div>
+              <hr>
+              <p style="text-indent:50px">{{ usulan.usulan }}</p>
+              <div class="mt-2">
+                
+              </div>  
+              <hr>
+              {% if usulan.like %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Hapus Detail Like Usulan' id=usulan.id id_acara=acara.id %}'"><i class='bx bxs-up-arrow'></i></button>
+            {% else %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Detail Like Usulan' id=usulan.id id_acara=acara.id %}'"><i class='bx bx-up-arrow'></i></button>
+            {% endif %}
+            <label>{{ usulan.like|sub:usulan.dislike }}</label>
+            {% if usulan.dislike %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Hapus Detail Dislike Usulan' id=usulan.id id_acara=acara.id %}'"><i class='bx bxs-down-arrow' ></i>
+            {% else %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Detail Dislike Usulan' id=usulan.id id_acara=acara.id %}'"><i class='bx bx-down-arrow' ></i>
+            {% endif %}
+              
+            </div>
+          </div>
+          <div class="card mt-4 mb-4">
+            <div class="card-body">
+            <h4 class="text-center">Komentar</h4>
+              <form id="tambah_usulan" action="#" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                  <label class="col-sm-2 col-form-label mt-3" for="komentar">Komentar</label>
+                  <div class="col-sm-10">
+                    <textarea class="form-control" name="komentar" cols="2" rows="2" placeholder="Masukkan komentar anda"></textarea>
+                  </div>
+                </div>
+              </form>
+              <div class="d-flex flex-row-reverse">
+                <button type="submit" name="btn" id="btn_usulan" value="Tambah Usulan" class="btn btn-primary btn-icon mt-3" form="tambah_usulan"><i class='bx bx-send'></i></button>
+              </div>
+            </div>
+          </div>
+          {% for comment in semua_comment%}
+          {% if comment.comment.pengusul.id == request.user.pengguna.id %}
+          <div class="card mb-4" id="{{comment.comment.id}}">
+            <div class="card-body">
+              <div class="d-flex flex-row-reverse">
+                  <div class="flex-shrink-0 me-3">
+                    <div class="avatar">
+                      {% if comment.comment.pengusul.foto_profile %}
+                      <img src="{{comment.comment.pengusul.foto_profile.url}}" alt class="w-px-40 h-px-40 rounded-circle" />
+                      {% else %}
+                      <img src="{% static './assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="flex-grow me-4">
+                    <span class="fw-semibold d-block">Anda</span>
+                    <small class="text-muted">{{ comment.comment.tanggal|naturaltime }}</small>
+
+                  </div>
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <p class="mt-3">{{ comment.comment.usulan_comment }}</p> 
+                </div>
+                <div class="d-flex flex-row-reverse">
+                    <div>
+                        {% if comment.like %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Hapus Like Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bxs-up-arrow'></i></button>
+            {% else %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Like Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bx-up-arrow'></i></button>
+            {% endif %}
+            <label>{{ comment.comment.like|sub:comment.comment.dislike }}</label>
+            {% if comment.dislike %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Hapus Dislike Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bxs-down-arrow' ></i>
+            {% else %}
+            <button class="btn btn-icon" onclick="location.href='{% url 'Dislike Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bx-down-arrow' ></i>
+            {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card mb-4" id="{{comment.comment.id}}">
+            <div class="card-body">
+              <div class="d-flex">
+                  <div class="flex-shrink-0 me-3">
+                    <div class="avatar">
+                      {% if comment.comment.pengusul.foto_profile %}
+                      <img src="{{comment.comment.pengusul.foto_profile.url}}" alt class="w-px-40 h-px-40 rounded-circle" />
+                      {% else %}
+                      <img src="{% static './assets/img/avatars/1.png' %}" alt class="w-px-40 h-auto rounded-circle" />
+                      {% endif %}
+                    </div>
+                  </div>
+                  <div class="flex-grow">
+                    <span class="fw-semibold d-block">{{ comment.comment.pengusul.nama }}</span>
+                    <small class="text-muted">{{ comment.comment.tanggal|naturaltime }}</small>
+
+                  </div>
+                </div>
+                <div class="d-flex">
+                    <p class="mt-3">{{ comment.comment.usulan_comment }}</p> 
+                </div>
+                <div class="d-flex">
+                    <div>
+                        {% if comment.like %}
+                        <button class="btn btn-icon" onclick="location.href='{% url 'Hapus Like Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bxs-up-arrow'></i></button>
+                        {% else %}
+                        <button class="btn btn-icon" onclick="location.href='{% url 'Like Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bx-up-arrow'></i></button>
+                        {% endif %}
+                        <label>{{ comment.comment.like|sub:comment.comment.dislike }}</label>
+                        {% if comment.dislike %}
+                        <button class="btn btn-icon" onclick="location.href='{% url 'Hapus Dislike Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bxs-down-arrow' ></i>
+                        {% else %}
+                        <button class="btn btn-icon" onclick="location.href='{% url 'Dislike Comment' id_acara=acara.id id_usulan=usulan.id id=comment.comment.id %}'"><i class='bx bx-down-arrow' ></i>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+       
+    </div>
+</div>
+{% comment %} <div class="d-flex">
+                  <div class="flex-shrink-0 me-3">
+                    <div class="avatar">
+                      <img src="./assets/img/avatars/1.png" alt class="w-px-40 h-auto rounded-circle" />
+                    </div>
+                  </div>
+                  <div class="flex-grow">
+                    <span class="fw-semibold d-block">Adi Adriana</span>
+                    <small class="text-muted">1 jam yang lalu</small>
+
+                  </div>
+                </div>
+                <p class="mt-3">Pih Jelek To, walaupun cang ngerti, tapi jelek to!!</p> 
+                <i class='bx bx-like'></i>
+                <i class='bx bx-dislike' ></i>
+            </div> {% endcomment %}
+{% endblock %}

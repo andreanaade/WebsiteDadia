@@ -1,0 +1,185 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% load humanize %}
+
+
+{% block extracss %}
+{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="d-flex justify-content-between">
+      <h4 class="fw-bold py-3 px-4"><span class="text-muted fw-light"></span>Berita</h4>
+      <div>
+        <button type="button" class="btn btn-icon btn-primary mt-2 mx-4" data-bs-toggle="modal" data-bs-target="#tambahBerita">
+            <span class="tf-icons bx bxs-plus-square"></span>
+        </button>
+      </div>
+    </div>
+    {% include 'main/messages.html'%}
+<div class="card-deck">
+<!-- Card Berita !-->
+    {% if ada_data %}
+{% for berita in semua_berita %}
+<div class="card mb-4">
+  <div class="row">
+    <div class="col-md-6">
+      {% if berita.foto %}
+      <img class="card-img-top" src="{{ berita.foto.url }}" alt="Card image cap" id="gambarBerita">
+      {% else %}  
+      <img class="card-img-top" src="{% static './default.jpg' %}" alt="Card image cap" id="gambarBerita">
+      {% endif %}
+    </div>
+    <div class="col-md-6">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+            <h5 class="card-title text-wrap" style="width:90%;" id="judulBerita">{{ berita.judul }}</h5>
+            {% if request.user.pengguna.id == berita.dibuat_oleh.id %}
+            <div class="btn-group">
+                <button
+                    type="button"
+                    class="btn btn-icon rounded-pill dropdown-toggle hide-arrow"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                >
+                    <i class="bx bx-dots-vertical-rounded"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" style="cursor:pointer" onclick="ubah(url='{% url 'Get Berita' id=berita.id %}')"><i class="tf-icons bx bx-edit me-3"></i>Ubah</a></li>
+                    <li><a class="dropdown-item" style="cursor:pointer" onclick="confirm('Yakin ingin menghapus berita ini?') ? location.href='{% url 'Hapus Berita' id=berita.id %}' : ''"><i class="tf-icons bx bx-trash me-3"></i>Hapus</a></li>
+                </ul>
+            </div>
+            {% endif %}    
+        </div>
+          <p class="card-text" id="deskripsiBerita">{{ berita.deskripsi }}</p>
+      </div>    
+    </div>
+  </div>  
+  <div class="card-footer">
+      <small class="text-muted" id="tanggalBerita">{{ berita.tanggal|naturaltime}}, created by {{berita.dibuat_oleh.nama}}</small>
+  </div>
+</div>
+{% endfor %}
+{% else %}
+<h4 align="center" class="text-danger">Belum ada berita!</h4>
+{% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block modal %}
+<div class="modal fade" id="tambahBerita" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahBeritaLabel">Tambah Berita</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="id_berita" id="id_berita"/>
+            <label class="col-sm-3 col-form-label" for="id_judul">Judul</label>
+            <div class="col-sm-9">
+              {{ form.judul }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_deskripsi">Deskripsi</label>
+            <div class="col-sm-9">
+              {{ form.deskripsi }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_foto">Foto</label>
+            <div class="col-sm-9">
+              {{ form.foto }}
+            </div>
+          </div>
+        </form>
+        <a id="href_foto" href="" target="_blank"><img id="img_foto" class="w-100"/></a>
+        <p class="text-danger" id="paragraph"></p>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tambah" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  let id_berita = document.getElementById('id_berita');
+  let judul = document.getElementById('id_judul');
+  let deskripsi = document.getElementById('id_deskripsi');
+  let foto = document.getElementById('id_foto');
+  let modal_label = document.getElementById('tambahBeritaLabel');
+  let btn_submit = document.getElementById('btn_submit');
+  let img_foto = document.getElementById('img_foto');
+  let paragraph = document.getElementById('paragraph');
+  let href_foto = document.getElementById('href_foto');
+
+  function ubah(url) {
+      $.ajax({
+          url: url,
+          success: function(data) {
+              id_berita.value = JSON.parse(data)[0].pk
+              data = JSON.parse(data)[0].fields
+              judul.value = data.judul
+              deskripsi.value = data.deskripsi
+              modal_label.innerText = 'Ubah Pengumuman'
+              btn_submit.innerText = "Simpan"
+              btn_submit.value = "Ubah"
+              if (data.foto) {
+                img_foto.style = "visibility:visible"
+                img_foto.src = "/"+data.foto
+                href_foto.href = "/"+data.foto
+                paragraph.innerText = ""
+            } else {
+                img_foto.style = "visibility:hidden"
+                href_foto.style = "visibility:hidden"
+                href_foto.href = "#"
+                paragraph.innerText = "Berita tidak berisi foto"
+            }
+              $("#tambahBerita").modal("show");
+          }
+      });
+  }
+
+  $('#tambahBerita').on('hidden.bs.modal', function () {
+      $(this).find('form').trigger('reset');
+      id_pengumuman.value = ""
+      img_foto.src = ""
+      img_foto.style = "visibility:hidden"
+      href_foto.style = "visibility:hidden"
+      href_foto.href = "#"
+      paragraph.innerText = ""
+      judul.value = ""
+      deskripsi.value = ""
+      modal_label.innerText = 'Tambah Pengumuman'
+      btn_submit.innerText = "Simpan"
+      btn_submit.value = "Tambah"
+  })
+
+  foto.onchange = evt => {
+    const [file] = foto.files
+    if (file) {
+        img_foto.src = URL.createObjectURL(file)
+        img_foto.style = "visibility:visible"
+        paragraph.innerText = ""
+        href_foto.href = URL.createObjectURL(file)
+    }
+}
+</script>
+{% endblock %}

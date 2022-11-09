@@ -1,0 +1,93 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print</title>
+    <style>
+        @page { size: auto;  margin: 0mm; }
+        table {
+            max-width: 2480px;
+            width: 100%;
+        }
+        table td {
+            width: auto;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+<body>
+    <table width="100%" style="margin-bottom:10px; margin-top:20px">
+        <tr align="center">
+            <td><img src="{% static '/logo_dadia.jpg' %}"/ width="75px" height="auto" style="position:absolute; left:100px; top:25px"><h1>Dadia Pasek Gelgel Tabola<h1></td>
+        </tr>
+    </table>
+    <hr width="80%" align="center">
+    <h2 align="center">Laporan Tunggakan Anggota</h2>
+    <div style="width:80%; margin:auto">
+        <table style="margin-bottom:20px">
+            <tr>
+                <td style="width: 100px">Acara</td>
+                <td>:</td>
+                <td>{{acara.judul}}</td>
+            </tr>
+            <tr>
+                <td>Tanggal Print</td>
+                <td>:</td>
+                <td>{% now "d-m-Y H:i" %}</td>
+            </tr>
+            <tr>
+                <td>Diprint oleh</td>
+                <td>:</td>
+                <td>{{ request.user.pengguna.nama }}</td>
+            </tr>
+        </table>
+        <table border="1">
+            <tr>
+                <th>No</th>
+                <th scope="col" style="width:150px; word-wrap:break-word">Nama Anggota</th>
+                <th scope="col">Terakhir Bayar</th>
+                <th scope="col">Sisa Tunggakan</th>
+                <th scope="col">Kelebihan Bayar</th>
+            </tr>
+            {% for d in data %}
+            <tr>
+                <td align="center">{{ forloop.counter }}</td>
+                <td style="padding-left:5px">{{ d.pengguna.nama }}</td>
+                {% if d.terakhir_bayar != 'Belum Bayar' %}
+                <td align="center">{{ d.terakhir_bayar|date:"d-m-Y H:i" }}</td>
+                {% else %}
+                <td align="center">{{ d.terakhir_bayar }}</td>
+                {% endif %}
+                <td align="right" style="padding-right:5px">Rp. {{ d.sisa|intcomma }}</td>
+                <td align="right" style="padding-right:5px">Rp. {{ d.lebih|intcomma }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Jumlah</td>
+                <td align='right' style="padding-right:5px">Rp. {{jumlah|intcomma}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Jumlah Peturunan (Estimasi Biaya)</td>
+                <td align='right' style="padding-right:5px">Rp. {{peturunan.jumlah_peturunan|intcomma}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Total Biaya Semeton Pedesaan</td>
+                <td align='right' style="padding-right:5px">Rp. {{total_tambahan_bayar|intcomma}}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Total Yang Sudah Dibayar</td>
+                <td align='right' style="padding-right:5px">Rp. {{total_tunggakan|intcomma}}</td>
+                <td></td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

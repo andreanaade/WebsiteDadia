@@ -1,0 +1,124 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class='mb-4 w-100 d-flex justify-content-between'>
+    <div>
+        <button type="button" class="btn btn-icon btn-primary mt-2" onclick="location.href='/acara/{{acara.id}}'">
+            <i class="tf-icons bx bx-arrow-back"></i>
+        </button>
+    </div>
+    <div> 
+
+    </div>
+  </div>
+  {% include 'main/messages.html'%}
+  <div class="card">
+    <h3 class="card-header">Validasi Pengajuan Acara {{ acara.judul }}</h3>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Tanggal Pengajuan</th>
+            <th>Keterangan</th>
+            <th>Jumlah</th>
+            {% if request.user.pengguna.tipe == 'Admin'%}
+            <th>Aksi</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+        {% if ada_data %}
+          {% for p in pengajuan %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ p.tanggal_kirim|date:"d-m-Y H:i" }}</td>
+            <td class="text-wrap">{{ p.deskripsi }}</td>
+            <td align="right">Rp. {{ p.jumlah|intcomma }}</td>
+            
+            {% if request.user.pengguna.tipe == 'Admin'%}
+            <td>
+                <button type="button" class="btn btn-icon btn-primary mx-1" onclick="confirm('Yakin ingin memvalidasi data ini?') ? location.href='{% url 'Terima Pengajuan' id=p.id id_acara=acara.id%}' : '#'" ><i class="tf-icons bx bx-check-square"></i></button><button type="button" class="btn btn-icon btn-danger mx-1" onclick="tolak(url='{% url 'Get Pengajuan' id=p.id %}')"><i class="tf-icons bx bx-x-circle"></i></button>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="5" align="center" class="text-danger">Belum Ada Data!</td>
+          </tr>
+          {% endif %}
+          <tfoot class="table-border-bottom-0">
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Total Yang Belum Tervalidasi</td>
+                <td align='right'>Rp. {{total|intcomma}}</td>
+            </tr>
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tolakTransfer" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tolakTransferLabel">Tolak Pembayaran</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="id_pengajuan" id="id_pengajuan"/>
+            <label class="col-sm-3 col-form-label" for="id_tipe_dana">Alasan Ditolak</label>
+            <div class="col-sm-9">
+              {{ form.alasan }}
+            </div>
+          </div>
+        </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tolak" form="form">Tolak</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  let alasan = document.getElementById('id_alasan');
+  let id_pengajuan = document.getElementById('id_pengajuan');
+
+  function tolak(url){
+    $.ajax({
+        url: url,
+        success: function(data) {
+          id_pengajuan.value = JSON.parse(data)[0].pk
+            $("#tolakTransfer").modal("show");
+        }
+    });
+  }
+
+  $('#tolakTransfer').on('hidden.bs.modal', function () {
+      $(this).find('form').trigger('reset');
+      id_pengajuan.value = ""
+      alasan.value = ""
+  })
+
+</script>
+{% endblock %}

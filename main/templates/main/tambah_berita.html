@@ -1,0 +1,18 @@
+{% extends 'main/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+
+{% block extracss %}
+{% endblock %}
+
+{% block content %}
+<form action="#" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="Tambah Berita" class="btn btn-secondary">
+</form>
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

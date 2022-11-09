@@ -1,0 +1,175 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class='mb-4 w-100 d-flex justify-content-between'>
+    <div>
+    </div>
+    <div> 
+        {% if request.user.pengguna.tipe == 'Admin' %}
+        <button type="button" class="btn btn-icon btn-primary mt-2" data-bs-toggle="modal" data-bs-target="#tambahAnggota">
+            <span class="tf-icons bx bxs-plus-square"></span>
+        </button>
+        {% endif %}
+    </div>
+  </div>
+  {% include 'main/messages.html'%}
+  <div class="card">
+    <h3 class="card-header">Data Anggota Dadia</h3>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>No</th>
+            <th>Nama Lengkap</th>
+            <th>Nomor HP</th>
+            <th>Email</th>
+            <th>Status Validasi</th>
+            <th>Jabatan</th>
+            {% if request.user.pengguna.tipe == 'Admin' %}
+            <th>Aksi</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% for pengguna in semua_pengguna %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ pengguna.nama }}</td>
+            {% if pengguna.status %}
+            <td>{{ pengguna.no_hp }}</td>
+            <td>{{ pengguna.user.email }}</td>
+            {% else %}
+            <td>(Username) {{ pengguna.user.username }}</td>
+            <td>(Password) {{ pengguna.user.email }}</td>
+            {% endif %}
+            <td align="center">
+                {% if pengguna.status %}
+                <i class='bx bx-check-square'></i>
+                {% else %}
+                <i class='bx bx-x-circle'></i>
+                {% endif %}
+            </td>
+            <td>
+              {% if pengguna.tipe == 'Admin' %}
+              Kelihan
+              {% else %}
+              {{ pengguna.tipe }}
+              {% endif %}
+            </td>
+            {% if request.user.pengguna.tipe == 'Admin' %}
+            <td>
+              <button class="btn btn-icon btn-primary mx-1" onclick="ubah(url='{% url 'Get Anggota' id=pengguna.id %}')" ><i class="bx bx-edit-alt"></i></button><button type="button" class="btn btn-icon btn-danger mx-1" onclick="confirm('Yakin ingin menghapus data anggota ini?') ? location.href='{% url 'Hapus Anggota' id=pengguna.id %}' : ''"><i class="tf-icons bx bx-trash"></i></button><button type="button" class="btn btn-icon btn-primary mx-1" onclick="confirm('Yakin ingin memvalidasi data ini?') ? location.href='{% url 'Terima Anggota' id=pengguna.id%}' : '#'" ><i class="tf-icons bx bx-check-square"></i></button>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+          <tfoot class="table-border-bottom-0">
+            {% comment %} <tr>
+                <td colspan="4" align="center" class="fw-bolder">Jumlah</td>
+                <td align='right'>Rp. {{total_pemasukan|intcomma}}</td>
+                <td align='right'>Rp. {{total_pengeluaran|intcomma}}</td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="4" align="center" class="fw-bolder">Total Dana</td>
+                {% if total_dana > 0 %}
+                <td colspan="2" align='right' class="text-success">Rp. {{total_dana|intcomma}}</td>
+                {% else %}
+                <td colspan="2" align='right' class="text-danger">Rp. {{total_dana|intcomma}}</td>
+                {% endif %}
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr> {% endcomment %}
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tambahAnggota" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahAnggotaLabel">Tambah Anggota</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="id_anggota" id="id_anggota"/>
+            <label class="col-sm-3 col-form-label" for="id_nama">Nama Lengkap Anggota</label>
+            <div class="col-sm-9">
+              {{ form.nama }}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_tipe">Jabatan Anggota</label>
+            <div class="col-sm-9">
+              {{ form.tipe }}
+            </div>
+          </div>
+        </form>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tambah" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script>
+  let id_anggota = document.getElementById('id_anggota');
+  let nama = document.getElementById('id_nama');
+  let tipe = document.getElementById('id_tipe');
+  let modal_label = document.getElementById('tambahAnggotaLabel')
+  
+
+  function ubah(url) {
+      $.ajax({
+          url: url,
+          success: function(data) {
+            console.log(data)
+              id_anggota.value = JSON.parse(data)[0].pk
+              data = JSON.parse(data)[0].fields
+              nama.value = data.nama
+              nama.readOnly = true
+              tipe.value = data.tipe
+              modal_label.innerText = 'Ubah Anggota'
+              btn_submit.innerText = "Simpan"
+              btn_submit.value = "Ubah"
+              $("#tambahAnggota").modal("show");
+          }
+      });
+  }
+
+  $('#tambahAnggota').on('hidden.bs.modal', function () {
+      $(this).find('form').trigger('reset');
+      id_anggota.value = ""
+      modal_label.innerText = 'Tambah Dana'
+      nama.readOnly = false
+      btn_submit.innerText = "Simpan"
+      btn_submit.value = "Tambah"
+  })
+
+</script>
+{% endblock %}

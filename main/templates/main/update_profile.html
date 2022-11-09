@@ -1,0 +1,42 @@
+{% extends 'main/base_auth.html' %}
+{% load crispy_forms_tags %}
+
+{% block header %}Update Profile{% endblock %}
+
+{% block content %}
+<form id="formAuthentication" class="mb-3" action="#" method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="username" class="form-label">Nomor KTP</label>
+      {{ form.no_ktp }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="password">Gambar KTP</label>
+      {{ form.foto_ktp }}
+    </div>
+    <div class="mb-3">
+      <label for="username" class="form-label">Nama Lengkap</label>
+      {{ form.nama }}
+    </div>
+    <div class="mb-3">
+      <label for="username" class="form-label">Email</label>
+      {{ form.email }}
+    </div>
+    <div class="mb-3">
+      <label for="username" class="form-label">Nomor HP</label>
+      {{ form.no_hp }}
+    </div>
+
+    <button class="btn btn-primary d-grid w-100">Register</button>
+  </form>
+
+  <p class="text-center">
+    <span>Sudah punya akun?</span>
+    <a href="/profile/login/">
+      <span>Login</span>
+    </a>
+  </p>
+{% endblock %}
+
+{% block extrajs %}
+{% endblock %}

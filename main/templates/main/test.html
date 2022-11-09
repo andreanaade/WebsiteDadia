@@ -1,0 +1,51 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Print</title>
+    <style>
+        @page { size: auto;  margin: 0mm; }
+        table {
+            max-width: 2480px;
+            width: 100%;
+        }
+        table td {
+            width: auto;
+            overflow: hidden;
+            word-wrap: break-word;
+        }
+    </style>
+    <link rel="stylesheet" href="{% static '/assets/vendor/fonts/boxicons.css' %}" />
+</head>
+<body>
+    <table width="100%" style="margin-bottom:10px; margin-top:20px">
+        <tr align="center">
+            <td><img src="{% static '/logo_dadia.jpg' %}"/ width="75px" height="auto" style="position:absolute; left:100px; top:25px"><h1>Dadia Pasek Gelgel Tabola<h1></td>
+        </tr>
+    </table>
+    <hr width="80%" align="center">
+    <h2 align="center">Akun Anggota</h2>
+    <div style="width:80%; margin:auto">
+        <table border="1">
+            <tr>
+                <th>No</th>
+                <th scope="col" style="width:200px; word-wrap:break-word">Nama Anggota</th>
+                <th scope="col">Username</th>
+                <th scope="col">Password</th>
+            </tr>
+            {% for d in pdf %}
+            <tr>
+                <td align="center">{{ forloop.counter }}</td>
+                <td align="left" style="padding-left:5px">{{ d.Nama }}</td>
+                <td align="center">{{ d.Username }}</td>
+                <td align='center' style="padding-right:5px">{{ d.Password }}</td>
+            </tr> 
+            {% endfor %}
+        </table>
+    </div>
+</body>
+</html>

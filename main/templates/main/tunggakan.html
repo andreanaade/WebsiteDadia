@@ -1,0 +1,171 @@
+{% extends 'main/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+
+{% block extracss %}
+<link rel="stylesheet" href="{% static '/dselect-main/dist/css/dselect.css' %}"/>
+{% endblock %}
+
+{% block content %}
+<div class="container-xxl flex-grow-1 container-p-y">
+  <div class='mb-4 w-100 d-flex justify-content-between'>
+    <div>
+        <button type="button" class="btn btn-icon btn-primary mt-2" onclick="location.href='/acara/{{acara.id}}'">
+            <i class="tf-icons bx bx-arrow-back"></i>
+        </button>
+    </div>
+    <div> 
+        <button type="button" class="btn btn-icon btn-secondary mt-2"  onclick="frames['print_iframe'].print()">
+            <i class='bx bx-printer'></i>
+        </button>
+        <a href="whatsapp://send?text=Berikut link tunggakan semua anggota di acara {{acara.judul}}:%0a%0a{{ request.build_absolute_uri }}%0a%0a_Pesan ini dibuat secara otomatis_" data-action="share/whatsapp/share"
+            target="_blank"><button type="button" class="btn btn-icon btn-success mt-2"><i class='bx bxl-whatsapp' ></i></button></a>
+    </div>
+  </div>
+  {% include 'main/messages.html'%}
+  <iframe name="print_iframe" height="75%" width="50%" src="{% url 'Print Tunggakan' id=acara.id %}" style="display:none;">
+  </iframe>
+  <div class="card">
+    <h3 class="card-header">Tunggakan Acara {{ acara.judul }}</h3>
+    <div class="table-responsive text-nowrap">
+      <table class="table table-striped">
+        <thead>
+          <tr align="center">
+            <th>No</th>
+            <th>Nama Anggota</th>
+            <th>Terakhir Bayar</th>
+            <th>Sisa Tunggakan</th>
+            <th>Kelebihan Bayar</th>
+            {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+            <th>Aksi</th>
+            {% endif %}
+          </tr>
+        </thead>
+        <tbody class="table-border-bottom-0">
+          {% for d in data %}
+          <tr>
+            <td align="center">{{ forloop.counter }}</td>
+            <td>{{ d.pengguna.nama }}</td>
+            {% if d.terakhir_bayar != 'Belum Bayar' %}
+            <td align="center">{{ d.terakhir_bayar|date:"d-m-Y H:i" }}</td>
+            {% else %}
+            <td align="center">{{ d.terakhir_bayar }}</td>
+            {% endif %}
+            <td align="right">Rp. {{ d.sisa|intcomma }}</td>
+            <td align="right">Rp. {{ d.lebih|intcomma }}</td>
+            {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+            <td align="center">
+              <button class="btn btn-icon btn-primary mx-1" onclick="ubah(url='{% url 'Get Jumlah' id=d.pengguna.id id_peturunan=peturunan.id %}')" ><i class='tf-icons bx bx-wallet'></i></button>
+            </td>
+            {% endif %}
+          </tr>
+          {% endfor %}
+          <tfoot class="table-border-bottom-0">
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Jumlah</td>
+                <td align='right'>Rp. {{jumlah|intcomma}}</td>
+                <td></td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Jumlah Peturunan (Estimasi Biaya)</td>
+                <td align='right'>Rp. {{peturunan.jumlah_peturunan|intcomma}}</td>
+                <td></td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Total Biaya Semeton Pedesaan</td>
+                <td align='right'>Rp. {{total_tambahan_bayar|intcomma}}</td>
+                <td></td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td colspan="3" align="center" class="fw-bolder">Total Yang Sudah Dibayar</td>
+                <td align='right'>Rp. {{total_tunggakan|intcomma}}</td>
+                <td></td>
+                {% if request.user.pengguna.tipe == 'Admin' or request.user.pengguna.tipe == 'Bendahara' %}
+                <td></td>
+                {% endif %}
+            </tr>
+          </tfoot>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block modal %}
+<div class="modal fade" id="tambahPeturunan" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="tambahPeturunanLabel">Tambah Peturunan</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id='form' action="#" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="row mb-3">
+            <input type="hidden" required="false" name="pengguna" id="pengguna"/>
+            <label class="col-sm-3 col-form-label" for="id_tipe_dana">ID Anggota</label>
+            <div class="col-sm-9">
+              <input class="form-control" type="text" id="readonly_pengguna" style="display:none" readonly/>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <label class="col-sm-3 col-form-label" for="id_jumlah">Jumlah Bayar</label>
+            <div class="col-sm-9">
+              {{ form.bayar }}
+            </div>
+          </div>
+        </form> 
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+          Tutup
+        </button>
+        <button type="submit" name="btn" class="btn btn-primary" id="btn_submit" value="Tambah" form="form">Simpan</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extrajs %}
+<script src="{% static '/dselect-main/dist/js/dselect.js' %}"></script>
+<script>
+  let pengguna = document.getElementById('pengguna');
+  let bayar = document.getElementById('id_bayar');
+  let modal_label = document.getElementById('tambahPeturunanLabel');
+  let btn_submit = document.getElementById('btn_submit');
+  let readonly_pengguna = document.getElementById('readonly_pengguna')
+
+  function ubah(url) {
+    $.ajax({
+        url: url,
+        success: function(data) {
+            console.log(bayar)
+            pengguna.value = data.id
+            readonly_pengguna.style = 'display:block'
+            readonly_pengguna.value = data.nama
+            bayar.value = data.bayar
+            modal_label.innerText = 'Tambah Peturunan'
+            btn_submit.innerText = "Simpan"
+            btn_submit.value = "Tambah"
+            $("#tambahPeturunan").modal("show");
+        }
+    });
+}
+</script>
+{% endblock %}
